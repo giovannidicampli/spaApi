@@ -25,17 +25,17 @@ class OffertaRoutes extends Route
         $con = DBController::getConnection();
 
         if ( $con ) {
-                $query = "INSERT INTO offerta (nome, dataInizio, dataFine, descrizione, prezzo) VALUES (?, ?, ?, ?, ?)";
+            $query = "INSERT INTO offerta (nome, dataInizio, dataFine, descrizione, prezzo) VALUES (?, ?, ?, ?, ?)";
 
-                $stmt = $con->prepare($query);
-                $stmt->bind_param("ssssi", $nome, $dataInizio, $dataFine, $descrizione, $prezzo);
-                $stmt->execute();
-                $stmt->store_result();
+            $stmt = $con->prepare($query);
+            $stmt->bind_param("ssssi", $nome, $dataInizio, $dataFine, $descrizione, $prezzo);
+            $stmt->execute();
+            $stmt->store_result();
 
-                if ( $stmt ) {
-                    $result = true;
-                    $this->message = "inserimento effettuato";
-                    $response = self::get_response($response, $result, 'registrazione', true);
+            if ( $stmt ) {
+                $result = true;
+                $this->message = "inserimento effettuato";
+                $response = self::get_response($response, $result, 'registrazione', true);
 
 
             } else {
@@ -50,6 +50,189 @@ class OffertaRoutes extends Route
 
         return $response;
     }
+
+
+    public function get_offerte(Request $request, Response $response)
+    {
+        $result = false;
+
+        $con = DBController::getConnection();
+
+        if ( $con ) {
+            $query = "SELECT nome, dataInizio, dataFine, descrizione, prezzo FROM offerta";
+
+            $stmt = $con->prepare($query);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ( $stmt->num_rows() ) {
+                $stmt->bind_result($nome, $dataInizio, $dataFine, $descrizione, $prezzo);
+
+                $offerte = array();
+
+                while ($stmt->fetch()) {
+                    $temp = array();
+                    $temp['nome'] = $nome;
+                    $temp['dataInizio'] = $dataInizio;
+                    $temp['dataFine'] = $dataFine;
+                    $temp['descrizione'] = $descrizione;
+                    $temp['prezzo'] = $prezzo;
+                    array_push($offerte, $temp);
+                }
+
+                $result = true;
+                $this->message = "ci sono offerte";
+                $response = self::get_response($response, $result, 'offerte', $offerte);
+
+
+            } else {
+                $this->message = "parametri mancanti";
+                $response = self::get_response($response, $result, 'offerte', false);
+            }
+
+        } else {
+            $this->message = "database non connesso";
+            $response = self::get_response($response, $result, 'offerte', false);
+        }
+
+        return $response;
+    }
+
+    public function get_offerta_by_id(Request $request, Response $response)
+    {
+        $result = false;
+
+        $con = DBController::getConnection();
+
+        if ( $con ) {
+
+            $id = $request->getAttribute('id');
+
+            $query = "SELECT nome, dataInizio, dataFine, descrizione, prezzo FROM offerta WHERE id = ?";
+
+            $stmt = $con->prepare($query);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ( $stmt->num_rows() ) {
+                $stmt->bind_result($nome, $dataInizio, $dataFine, $descrizione, $prezzo);
+                $stmt->fetch();
+
+
+                $offerta['nome'] = $nome;
+                $offerta['dataInizio'] = $dataInizio;
+                $offerta['dataFine'] = $dataFine;
+                $offerta['descrizione'] = $descrizione;
+                $offerta['prezzo'] = $prezzo;
+
+
+
+                $result = true;
+                $this->message = "l'offerta c'è";
+                $response = self::get_response($response, $result, 'offerta', $offerta);
+
+
+            } else {
+                $this->message = "parametri mancanti";
+                $response = self::get_response($response, $result, 'offerte', false);
+            }
+
+        } else {
+            $this->message = "database non connesso";
+            $response = self::get_response($response, $result, 'offerte', false);
+        }
+
+        return $response;
+    }
+
+
+    public function delete_offerta_by_id(Request $request, Response $response)
+    {
+        $result = false;
+
+        $con = DBController::getConnection();
+
+        if ( $con ) {
+
+            $id = $request->getAttribute('id');
+
+            $query = "DELETE FROM offerta WHERE id = ?";
+
+            $stmt = $con->prepare($query);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ( $stmt ) {
+
+                $result = true;
+                $this->message = "offerta eliminata";
+                $response = self::get_response($response, $result, 'delete', true);
+
+
+            } else {
+                $this->message = "parametri mancanti";
+                $response = self::get_response($response, $result, 'delete', false);
+            }
+
+        } else {
+            $this->message = "database non connesso";
+            $response = self::get_response($response, $result, 'delete', false);
+        }
+
+        return $response;
+    }
+
+    public function edit_offerta_by_id(Request $request, Response $response)
+    {
+        $result = false;
+
+        $con = DBController::getConnection();
+
+        if ( $con ) {
+
+            $id = $request->getAttribute('id');
+
+            $newNome = $request->getHeader('nome');
+            $newDataInizio = $request->getHeader('dataInizio');
+            $newDataFine = $request->getHeader('dataFine');
+            $newDescrizione = $request->getHeader('descrizione');
+            $newPrezzo = $request->getHeader('prezzo');
+
+            $query = "UPDATE offerta SET nome = '$newNome[0]', dataInizio = '$newDataInizio[0]', dataFine = '$newDataFine[0]'
+             descrizione = '$newDescrizione[0]', prezzo = '$newPrezzo[0]' WHERE id = '$id'";
+
+            print_r($query);
+            die();
+
+            $stmt = $con->prepare($query);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ( $stmt ) {
+
+                $result = true;
+                $this->message = "offerta eliminata";
+                $response = self::get_response($response, $result, 'delete', true);
+
+
+            } else {
+                $this->message = "parametri mancanti";
+                $response = self::get_response($response, $result, 'delete', false);
+            }
+
+        } else {
+            $this->message = "database non connesso";
+            $response = self::get_response($response, $result, 'delete', false);
+        }
+
+        return $response;
+    }
+
+
+}
+
 
 //    public function accesso_utente(Request $request, Response $response)
 //    {
@@ -260,4 +443,3 @@ class OffertaRoutes extends Route
 //        return $response;
 //    }
 //
-}
