@@ -1,3 +1,4 @@
+#Questo file serve a togliere il segmento "index.php" dall'URL
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

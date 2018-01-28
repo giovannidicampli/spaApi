@@ -1,16 +1,14 @@
 <?php
-class dbManager{
-    // Properties
-    private $dbhost = 'localhost';
-    private $dbuser = 'root';
-    private $dbpass = '';
-    private $dbname = 'spaDB';
+class DBController
+{
+    const host = 'localhost';
+    const database = 'spaDBApp';
+    const username = 'root';
+    const password = '';
 
-    // Connect
-    public function connect(){
-        $mysql_connect_str = "mysql:host=$this->dbhost;dbname=$this->dbname";
-        $dbConnection = new PDO($mysql_connect_str, $this->dbuser, $this->dbpass);
-        $dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $dbConnection;
+    public static function getConnection(){
+        $con = mysqli_connect(self::host, self::username, self::password, self::database);
+        return $con;
     }
+
 }
