@@ -29,6 +29,8 @@ class UserRoutes extends Route
         if ($con) {
             $requestData = $request->getParsedBody();
 
+            $nome = $requestData['nome'];
+            $cognome = $requestData['cognome'];
             $username = $requestData['username'];
             $email = $requestData['email'];
             $password = $requestData['password'];
@@ -40,10 +42,10 @@ class UserRoutes extends Route
                         $response = self::get_response($response, $result, 'registrazione', false);
                     } else {
 
-                        $query = "INSERT INTO utente (username, email, password) VALUES (?, ?, ?)";
+                        $query = "INSERT INTO utente (nome, cognome, username, email, password) VALUES (?, ?, ?, ?, ?)";
 
                         $stmt = $con->prepare($query);
-                        $stmt->bind_param("sss", $username, $email, md5($password));
+                        $stmt->bind_param("sssss",  $nome, $cognome, $username, $email, md5($password));
                         $stmt->execute();
                         $stmt->store_result();
 
@@ -221,7 +223,7 @@ class UserRoutes extends Route
             if ($utente) {
                 $query = "UPDATE utente SET";
 
-                $newUsername = $request->getHeader('username');
+                $newUsername = $request->getHeader('username', [0]);
                 $newEmail = $request->getHeader('email');
                 $newPassword = $request->getHeader('password');
 
@@ -247,9 +249,10 @@ class UserRoutes extends Route
                     $query .= " password = '" . md5($newPassword[0]) . "',";
                 }
 
-                $query = rtrim($query, ',');
+
                 $query .= " WHERE username = '" . $username . "'";
 
+                print_r($newUsername[0]);
                 print_r($query);
 
 

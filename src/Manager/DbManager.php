@@ -2,7 +2,7 @@
 class DBController
 {
     const host = 'localhost';
-    const database = 'spaDBApp';
+    const database = 'spaDB';
     const username = 'root';
     const password = '';
 

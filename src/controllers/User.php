@@ -7,7 +7,7 @@ class User
     {
         $con = DBController::getConnection();
 
-        $query = "SELECT id, username, email FROM utente WHERE id = ?";
+        $query = "SELECT id, nome, cognome, username, email FROM utente WHERE id = ?";
 
         $stmt = $con->prepare($query);
         $stmt->bind_param("i", $id);
@@ -15,13 +15,15 @@ class User
         $stmt->store_result();
 
         if ( $stmt->num_rows() > 0 ) {
-            $stmt->bind_result($id, $username, $email);
+            $stmt->bind_result($id, $nome, $cognome, $username, $email);
 
             $utente = array();
 
             while ($stmt->fetch()) {
                 $temp = array();
                 $temp['id'] = $id;
+                $temp['nome'] = $nome;
+                $temp['cognome'] = $cognome;
                 $temp['email'] = $email;
                 $temp['username'] = $username;
                 array_push($utente, $temp);
@@ -37,7 +39,7 @@ class User
     {
         $con = DBController::getConnection();
 
-        $query = "SELECT id, username, email FROM utente WHERE username = ?";
+        $query = "SELECT id, nome, cognome, username, email FROM utente WHERE username = ?";
 
         $stmt = $con->prepare($query);
         $stmt->bind_param("s", $username);
@@ -47,13 +49,15 @@ class User
 
 
         if ( $stmt->num_rows() > 0 ) {
-            $stmt->bind_result($id, $username, $email);
+            $stmt->bind_result($id, $nome, $cognome, $username, $email);
 
             $utente = array();
 
             while ($stmt->fetch()) {
                 $temp = array();
                 $temp['id'] = $id;
+                $temp['nome'] = $nome;
+                $temp['cognome'] = $cognome;
                 $temp['email'] = $email;
                 $temp['username'] = $username;
                 array_push($utente, $temp);
@@ -69,7 +73,7 @@ class User
     {
         $con = DBController::getConnection();
 
-        $query = "SELECT id, username, email FROM utente WHERE email = ?";
+        $query = "SELECT id, nome, cognome, username, email FROM utente WHERE email = ?";
 
         $stmt = $con->prepare($query);
         $stmt->bind_param("s", $email);
@@ -77,13 +81,15 @@ class User
         $stmt->store_result();
 
         if ( $stmt->num_rows() > 0 ) {
-            $stmt->bind_result($id, $username, $email);
+            $stmt->bind_result($id, $nome, $cognome, $username, $email);
 
             $utente = array();
 
             while ($stmt->fetch()) {
                 $temp = array();
                 $temp['id'] = $id;
+                $temp['nome'] = $nome;
+                $temp['cognome'] = $cognome;
                 $temp['email'] = $email;
                 $temp['username'] = $username;
                 array_push($utente, $temp);
